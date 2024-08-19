@@ -1,0 +1,40 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+
+# Load the dataset
+df = pd.read_csv('C:\\Users\\DELL\\Desktop\\Dataset\\bank-additional-full.csv', sep=';', encoding='latin1')
+# Inspect the dataset
+print(df.head())
+print(df.info())
+print(df.describe())
+# Preprocess the dataset
+# Convert categorical columns to numerical using LabelEncoder
+label_encoders = {}
+for column in df.select_dtypes(include=['object']).columns:
+    le = LabelEncoder()
+    df[column] = le.fit_transform(df[column])
+    label_encoders[column] = le
+
+# Split the data into features and target variable
+y = df['y']               # Target variable
+X = df.drop('y', axis=1)  # Features
+
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# Create and train the decision tree classifier
+clf = DecisionTreeClassifier()
+clf.fit(X_train, y_train)
+
+# Make predictions
+y_pred = clf.predict(X_test)
+
+# Evaluate the model
+print(f"Accuracy: {accuracy_score(y_test, y_pred)}")
+print("Confusion Matrix:")
+print(confusion_matrix(y_test, y_pred))
+print("Classification Report:")
+print(classification_report(y_test, y_pred))
